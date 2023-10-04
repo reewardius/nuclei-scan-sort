@@ -14,7 +14,7 @@ def main(input_file):
         with open(input_file, 'r') as file:
             scan_results = [result.strip() for result in file.readlines()]
     except FileNotFoundError:
-        print(Fore.RED + '[!]  Not existing file or path' + Style.RESET_ALL)
+        print(Fore.RED + '[!] Error: The input file does not exist or the path is incorrect.' + Style.RESET_ALL)
         sys.exit(1)
 
     unique_domains = defaultdict(list)
@@ -24,7 +24,7 @@ def main(input_file):
         parts = result.split(" ")
         if len(parts) < 4:
             # Check if scan file is valid
-            print(Fore.RED + 'Not valid Nuclei Scan format' + Style.RESET_ALL)
+            print(Fore.RED + '[!] Error: Invalid Nuclei Scan format' + Style.RESET_ALL)
             sys.exit(1)
         
         severity, _, url = parts[2], parts[3], parts[3]
@@ -68,11 +68,7 @@ def main(input_file):
 if __name__ == '__main__':
     init()
     parser = ArgumentParser()
-    parser.add_argument('-i', '--input', help='Input file with Nuclei scan: /home/kali/scan.txt', default='', required=True)
+    parser.add_argument('-i', '--input', help='Input file with Nuclei scan', required=True)
     args = parser.parse_args()
 
-    if args.input != '':
-        main(args.input)
-    else:
-        print(Fore.RED + '[!]  No input file was given' + Style.RESET_ALL)
-        sys.exit(1)
+    main(args.input)
