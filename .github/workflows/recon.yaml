@@ -1,0 +1,44 @@
+name: 🔎 Recon workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  
+jobs:
+  recon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Amass - Enumeration
+        uses: fguisso/amass-action@main
+        with:
+          domains: owasp.org
+          brute: true
+          output: hosts.txt
+          
+      - name: Naabu - Port Scannner
+        uses: projectdiscovery/naabu-action@main
+        with:
+            list: hosts.txt
+            output: urls.txt
+            
+      - name: Nuclei - DAST Scan
+        uses: projectdiscovery/nuclei-action@main
+        with:
+          urls: urls.txt
+          output: nuclei.txt
+
+      - name: GitHub Workflow artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: hosts.txt
+          path: |
+            hosts.txt
+            urls.txt
+            nuclei.txt
